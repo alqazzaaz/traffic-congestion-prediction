@@ -1,6 +1,6 @@
 # 🚦 Traffic Congestion Prediction & Early Warning System
 
-> Bachelor Thesis | TU Dortmund | 2025
+> Bachelor Thesis | TU Dortmund | 2026
 > Machine Learning-based short-term traffic 
 > congestion prediction for Smart City applications
 
