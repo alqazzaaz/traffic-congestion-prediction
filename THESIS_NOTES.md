@@ -43,6 +43,120 @@
 - Class distribution: 18.6% congestion,
   81.4% no congestion
 
+### Preprocessing Pipeline
+
+#### Sorting
+- Data sorted chronologically by road_id, 
+  date, time_id before all feature engineering
+
+#### Feature Engineering
+12 features used for modeling:
+
+Time features:
+- hour: extracted from start_time (0-23)
+- weekday: day of week (0=Monday, 6=Sunday)
+- is_weekend: binary flag (Saturday=5, Sunday=6)
+- is_rush_hour: binary flag for hours 7-9 and 
+  17-19 on weekdays
+  → Validated: 36.6% congestion during rush hour
+    vs 14.6% outside rush hour
+
+Speed features:
+- speed: current speed (km/h)
+- speed_lag_1: speed 10 minutes ago
+- speed_lag_2: speed 20 minutes ago
+- speed_lag_3: speed 30 minutes ago
+- speed_lag_6: speed 60 minutes ago
+- speed_rolling_mean_3: average speed last 30 min
+- speed_rolling_std_3: std speed last 30 min
+
+Road feature:
+- road_id: road segment identifier (1-214)
+
+#### Target Variable
+- congestion_t20: congestion 20 minutes ahead
+- Binary: 0 = no congestion, 1 = congestion
+- Created using shift(-2) per road segment
+- Validated: row T congestion_t20 matches 
+  row T+2 congestion
+
+#### Feature Correlation with Target
+Most predictive (negative – higher speed = less congestion):
+- speed:               -0.642
+- speed_rolling_mean:  -0.624
+- speed_lag_1:         -0.612
+- speed_lag_2:         -0.585
+- speed_lag_3:         -0.559
+- speed_lag_6:         -0.490
+
+Positive correlation:
+- is_rush_hour:        +0.224
+- speed_rolling_std:   +0.219
+- hour:                +0.206
+
+Weak correlation:
+- road_id:    -0.024
+- weekday:    -0.030
+- is_weekend: -0.053
+
+#### Feature Multicollinearity
+- Speed features highly correlated with each other
+  (speed vs rolling_mean: 0.98, speed vs lag_1: 0.96)
+- Acceptable for tree-based models and LSTM
+- weekday vs is_weekend: 0.78 (expected)
+- speed_rolling_std captures unique information
+  (low correlation with other features)
+- All 12 features retained
+
+#### NaN Removal
+- Removed 1,712 rows
+- First 6 rows per road: no lag history available
+- Last 2 rows per road: no future target available
+- Remaining: 1,853,860 rows
+
+#### Train / Validation / Test Split
+- Method: chronological split (never random)
+- Reason: time series data – future must not 
+  leak into training
+- Train:      70% = 1,297,702 rows
+- Validation: 15% = 278,079 rows
+- Test:       15% = 278,079 rows
+- Congestion rates:
+  Train: 20.0%, Validation: 14.9%, Test: 16.3%
+
+#### Scaling
+- Method: MinMaxScaler (range 0 to 1)
+- Fitted on training data only
+- Applied to validation and test
+- Reason: required for LSTM, standardizes
+  all features to equal scale
+
+#### Class Imbalance Handling
+- Method: class weights
+- Training distribution: 20% congestion,
+  80% no congestion
+- Class weights mathematically derived 
+  from training data distribution:
+  No congestion (0): 0.6247
+  Congestion (1):    2.5051
+  Ratio: 4.0x
+- Interpretation: missing a congestion case
+  costs 4x more than missing a no-congestion case
+- Applied to all three models:
+  Random Forest: class_weight='balanced'
+  XGBoost: scale_pos_weight=4.0
+  LSTM: class_weight={0: 0.6247, 1: 2.5051}
+
+### Saved Files
+data/processed/X_train.csv  → 237.4 MB
+data/processed/X_val.csv    →  51.1 MB
+data/processed/X_test.csv   →  51.1 MB
+data/processed/y_train.csv  →   6.2 MB
+data/processed/y_val.csv    →   1.3 MB
+data/processed/y_test.csv   →   1.3 MB
+models/scaler.pkl            → MinMaxScaler
+models/class_weights.pkl     → class weights
+
 ## Chapter 5 – Models
 (add notes here)
 
