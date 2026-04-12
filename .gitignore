@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data files (too large for GitHub)
+data/raw/
+data/processed/
+*.zip
+
+# VS Code
+.vscode/
