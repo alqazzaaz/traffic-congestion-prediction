@@ -157,8 +157,70 @@ data/processed/y_test.csv   →   1.3 MB
 models/scaler.pkl            → MinMaxScaler
 models/class_weights.pkl     → class weights
 
+---
+
 ## Chapter 5 – Models
-(add notes here)
+
+### Random Forest
+
+#### Algorithm
+- Ensemble of decision trees
+- Each tree trained on random subset of data
+  and features (bagging)
+- Final prediction by majority vote
+
+#### Hyperparameter Tuning
+Three configurations tested on validation set:
+
+| Config   | n_estimators | max_depth | F1   | Recall | Time  |
+|----------|-------------|-----------|------|--------|-------|
+| Baseline | 100         | None      | 0.69 | 0.60   | 61s   |
+| Config 2 | 100         | 20        | 0.75 | 0.77   | 53s   |
+| Config 3 | 200         | 20        | 0.75 | 0.77   | 114s  |
+
+Winner: Config 2 (100 trees, max_depth=20)
+Reason: Config 3 gives marginal improvement of 0.8%
+        in recall at double the training cost.
+        Config 2 is optimal efficiency/performance ratio.
+
+Key finding: limiting max_depth improved recall from
+60% to 77% – a 27.9% improvement – while reducing
+training time from 61s to 53s.
+
+#### Final Test Set Results (Config 2)
+- Precision (congestion): 0.74
+- Recall (congestion):    0.78
+- F1 (congestion):        0.76
+- Accuracy:               0.92
+- AUC-ROC:                0.9585
+- Training time:          53s
+- Model size:             535.7 MB
+
+#### Confusion Matrix (Test Set)
+- True Negatives:  220,536
+- False Positives:  12,155
+- False Negatives:  10,028
+- True Positives:   35,360
+
+#### Feature Importance (Random Forest)
+- speed:               0.282  ← most important
+- speed_rolling_mean:  0.188
+- speed_lag_1:         0.132
+- speed_lag_2:         0.121
+- speed_lag_3:         0.071
+- speed_lag_6:         0.065
+- speed_rolling_std:   0.043
+- hour:                0.043
+- road_id:             0.033
+- weekday:             0.014
+- is_rush_hour:        0.005
+- is_weekend:          0.002
+
+Key finding: speed features dominate. Time features
+(is_rush_hour, is_weekend) have very low importance –
+current speed implicitly encodes time-of-day patterns.
+
+---
 
 ## Chapter 6 – Evaluation
 (add results here)

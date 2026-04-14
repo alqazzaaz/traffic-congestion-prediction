@@ -10,5 +10,8 @@ __pycache__/
 data/
 *.zip
 
+# Large model files
+models/*.pkl
+
 # VS Code
 .vscode/
