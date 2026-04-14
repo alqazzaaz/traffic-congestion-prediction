@@ -196,6 +196,23 @@ training time from 61s to 53s.
 - Training time:          53s
 - Model size:             535.7 MB
 
+#### Threshold Analysis (RF)
+Default threshold 0.5 vs optimized:
+
+| Threshold | Precision | Recall | F1    |
+|-----------|-----------|--------|-------|
+| 0.30      | 0.621     | 0.896  | 0.733 |
+| 0.35      | 0.655     | 0.872  | 0.748 |
+| 0.40      | 0.688     | 0.845  | 0.758 |
+| 0.45      | 0.718     | 0.814  | 0.763 | ← best
+| 0.50      | 0.744     | 0.779  | 0.761 |
+
+Best threshold: 0.45
+Best F1: 0.763
+Recall improvement: 0.779 → 0.814 (+4.5%)
+Justification: lower threshold catches more
+congestion cases – preferred for early warning
+
 #### Confusion Matrix (Test Set)
 - True Negatives:  220,536
 - False Positives:  12,155
