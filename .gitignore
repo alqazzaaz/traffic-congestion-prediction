@@ -13,5 +13,8 @@ data/
 # Large model files
 models/*.pkl
 
+# Private thesis notes
+THESIS_NOTES.md
+
 # VS Code
 .vscode/
