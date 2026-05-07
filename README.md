@@ -62,9 +62,10 @@ traffic-congestion-prediction/
 ├── models/
 │   ├── scaler.pkl
 │   └── class_weights.pkl
-├── data/
-│   └── raw/
-└── requirements.txt
+├── src/
+├── .gitignore
+├── requirements.txt
+└── README.md
 ---
 
 ## Dataset
